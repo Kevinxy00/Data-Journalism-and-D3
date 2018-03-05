@@ -3,7 +3,7 @@
 
 // set margins
 var margin = {top: 20, right: 20, bottom: 30, left: 40};
-var width = 960 - margin.left - margin.right;
+var width = 800 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 
 // set x and y scale range
@@ -14,9 +14,11 @@ var xAxis = d3.axisBottom(xScale);
 
 var yAxis = d3.axisLeft(yScale);
 
+// append the svg in the main body
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("style", "background: WhiteSmoke")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -77,30 +79,36 @@ d3.csv(csv_data, function(error, data) {
         .attr("class", "label")
         .attr("x", function(d){
             console.log("text x: " + Number(d.Divorced_total_2014));
-            return xScale(d.Divorced_total_2014)-10;
+            return xScale(d.Divorced_total_2014)-8;
         })
         .attr("y", function(d){
-            return yScale(d.Depression_total_2014)+5;
+            return yScale(d.Depression_total_2014)+4;
         })
         .text(function(d){
             console.log(d.State);
             return d.State;
         })
-        .style("opacity", 0.7);
+        .style("font-size", "10px")
+        .style("font-weight", "bold")
+        .style("font-family", "verdana")
+        .style("opacity", 0.6);
 
+
+    // x axis title/label
     var xLabel = svg.append("text")
         .attr("class", "label")
         .attr("x", width/2)
-        .attr("y", height + 30)
+        .attr("y", height + 28)
         .attr("style", "font-weight:bold")
         .text("Divorced rate (%)");
-
+    // y axis title/label
     var yLabel = svg.append("text")
         .attr("class", "label")
         .attr("transform", "rotate(-90)")
         .attr("x", -height/2)
-        .attr("y", -35)
+        .attr("y", -37)
         .attr("dy", ".71em")
         .attr("style", "font-weight:bold")
         .text("Depression rate (%)");
 }); // end d3.csv 
+

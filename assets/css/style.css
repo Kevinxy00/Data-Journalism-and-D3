@@ -1,6 +1,40 @@
 .iframeContainer {
   padding: 20px;
   border: 1px solid #e3e3e3;
+  position: relative;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Useful responsive iframes instructions:
+   https://benmarshall.me/responsive-iframes/ 
+*/
+/* 16x9 Aspect Ratio */
+.intrinsic-container-16x9 {
+  padding-bottom: 56.25%;
+}
+
+/* 4x3 Aspect Ratio */
+.intrinsic-container-4x3 {
+  padding-bottom: 75%;
+}
+
+.iframeContainer iframe {
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.iframe_descr{
+  padding: 30px;
+  padding-left:75px;
+  padding-right:75px;
+  border: 1px solid lightgray;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  background-color: whitesmoke;
 }
 
 /* Sticky Footer rules (https://getbootstrap.com/examples/sticky-footer/) */
