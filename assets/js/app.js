@@ -15,7 +15,7 @@ var xAxis = d3.axisBottom(xScale);
 var yAxis = d3.axisLeft(yScale);
 
 // append the svg in the main body
-var svg = d3.select("body").append("svg")
+var svg = d3.select(".chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .attr("style", "background: WhiteSmoke")
@@ -102,6 +102,15 @@ d3.csv(csv_data, function(error, data) {
         d.Dr_visit_within_last_year = +d.Dr_visit_within_last_year;
     });
 
+    /* Initialize tooltip */
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([120, 10])
+        .html(function(d) { 
+            return d; 
+        });
+        svg.call(tip); 
+
     // get default active data-axis-name
     var activeX = d3
         .select("#x")
@@ -163,55 +172,114 @@ d3.csv(csv_data, function(error, data) {
             return d[y_data];
         }));
 
-        // append svg for x and y axes
-        svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        // *** If there's no previous plots, create one ***
+        if (d3.select(".dot").empty() == true){
+            // append svg for x and y axes
+            svg.append("g")
+            .attr("class", "xaxis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
 
-        svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+            svg.append("g")
+            .attr("class", "yaxis")
+            .call(yAxis);
 
+            // scatterplot dots
+            svg.selectAll(".dot")
+                .data(data)
+                .enter().append("circle")
+                .attr("class", "dot")
+                .attr("r", 10)
+                .attr("cx", function(d){
+                    return xScale(d[x_data]);
+                })
+                .attr("cy", function(d){
+                    return yScale(d[y_data])
+                })
+                .attr("fill", "red")
+                .style("opacity", 0.5);
 
-        // scatterplot dots
-        svg.selectAll(".dot")
-            .data(data)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("r", 10)
-            .attr("cx", function(d){
-                return xScale(d[x_data]);
-            })
-            .attr("cy", function(d){
-                return yScale(d[y_data])
-            })
-            .attr("fill", "red")
-            .style("opacity", 0.5);
+            // append text to each point
+            // note: only appended tooltip to the text as it is more in the center of the scatter dot
+            var text = svg.selectAll("dot")
+                .data(data)
+                .enter()
+                .append("text");
 
-        // append text to each point
-        var text = svg.selectAll("dot")
-            .data(data)
-            .enter()
-            .append("text");
+            var textLabels = text
+                .attr("class", "label")
+                .attr("x", function(d){
+                    return xScale(d[x_data])-8;
+                })
+                .attr("y", function(d){
+                    return yScale(d[y_data])+4;
+                })
+                .text(function(d){
+                    console.log(d.State);
+                    return d.State;
+                })
+                .style("font-size", "10px")
+                .style("font-weight", "bold")
+                .style("font-family", "verdana")
+                .style("opacity", 0.6)
+                // append tooltip 
+                .on('mouseover', handleMouseOver)
+                .on('mouseout', tip.hide);
 
-        var textLabels = text
-            .attr("class", "label")
-            .attr("x", function(d){
-                return xScale(d[x_data])-8;
-            })
-            .attr("y", function(d){
-                return yScale(d[y_data])+4;
-            })
-            .text(function(d){
-                console.log(d.State);
-                return d.State;
-            })
-            .style("font-size", "10px")
-            .style("font-weight", "bold")
-            .style("font-family", "verdana")
-            .style("opacity", 0.6);
+        } // end if d3.select(".dot") is empty b/c no dots have been created yet
+        else { // if there are dots, rescale and transform dot locations
+            // set new domain
+            xScale.domain(d3.extent(data, function(d) {
+                return d[x_data];
+            }));
+            yScale.domain(d3.extent(data, function(d){
+                return d[y_data];
+            }));
+            // rescale the axes
+            svg.select(".xaxis")
+                .transition()
+                .call(xAxis);
+            svg.select(".yaxis")
+                .transition()
+                .call(yAxis);
+
+            // reposition the dots
+            svg.selectAll(".dot")
+                .transition()
+                .attr("cx", function(d){
+                    return xScale(d[x_data]);
+                })
+                .attr("cy", function(d){
+                    return yScale(d[y_data])
+                });
+                
+            // reposition the text associated with each dot
+            svg.selectAll(".label")
+                .transition()
+                .attr("x", function(d){
+                    return xScale(d[x_data])-8;
+                })
+                .attr("y", function(d){
+                    return yScale(d[y_data])+4;
+                })
+                .text(function(d){
+                    console.log(d.State);
+                    return d.State;
+                })
+
+            // update the tooltip 
+            svg.selectAll(".label")
+            .on('mouseover', handleMouseOver);
+        } // end else rescale and repositioning
+
+        // function to handle mouse over event to update when an axis changes
+        function handleMouseOver(d){
+            tip.show(d.State + "<hr>" + 
+                "X" + ": " + d[x_data] 
+                + ", <br>" + "Y" + ": " + d[y_data]);
+        }
+        
     } // end plot_data function
-
+    
 }); // end d3.csv 
 
