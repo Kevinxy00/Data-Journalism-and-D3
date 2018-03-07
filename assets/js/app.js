@@ -102,7 +102,7 @@ d3.csv(csv_data, function(error, data) {
         d.Dr_visit_within_last_year = +d.Dr_visit_within_last_year;
     });
 
-    // get active data-axis-name
+    // get default active data-axis-name
     var activeX = d3
         .select("#x")
         .filter(".active").attr("data-axis-name");
@@ -114,6 +114,43 @@ d3.csv(csv_data, function(error, data) {
     
     // plot first chart 
     plot_data(activeX, activeY);
+
+    // change active x and y text on click
+    var allX = d3.selectAll("#x");
+    var allY = d3.selectAll("#y");
+
+    change_active_x(allX);
+    change_active_y(allY);
+
+    //input params (d3.selectAll(x axis labels))
+    function change_active_x(textLabels){
+        textLabels.on("click", function(event){
+            var clicked = d3.select(this)
+            var currentActive = textLabels.filter(".active")
+
+            // swap class of active and clicked
+            clicked.attr("class", "axis-text active");
+            currentActive.attr("class", "axis-text");
+
+            activeX = clicked.attr("data-axis-name");
+            plot_data(activeX, activeY);
+            //return clicked.attr("data-axis-name");
+        });
+    }
+    // input param (d3.selectAll(y axis labels))
+    function change_active_y(textLabels){
+        textLabels.on("click", function(event){
+            var clicked = d3.select(this)
+            var currentActive = textLabels.filter(".active")
+
+            // swap class of active and clicked
+            clicked.attr("class", "axis-text active");
+            currentActive.attr("class", "axis-text")
+
+            activeY = clicked.attr("data-axis-name");
+            plot_data(activeX, activeY);
+        });
+    }
 
     // *** Function that creates graph for selected x and y
     function plot_data(x_data, y_data) {
