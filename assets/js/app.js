@@ -3,6 +3,7 @@
 
 // set margins
 var margin = {top: 20, right: 20, bottom: 100, left: 100};
+
 var width = 800 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 
@@ -15,12 +16,21 @@ var xAxis = d3.axisBottom(xScale);
 var yAxis = d3.axisLeft(yScale);
 
 // append the svg in the main body
-var svg = d3.select(".chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+var svg = d3.select(".chart")
+    .append("div")
+    .classed("svg-container", true) //container class to make it responsive
+    .append("svg")
+    /*old code: unresponsive svg width & height
+        //.attr("width", width + margin.left + margin.right)
+        //.attr("height", height + margin.top + margin.bottom) */
+    // *** responsive SVG needs these 2 attributes and no width and height attr
+    .attr("preserveAspectRatio", "xMidYMid")
+    .attr("viewBox", "0 0 800 600")
+    //class to make it responsive
+    .classed("svg-content-responsive", true)
     .attr("style", "background: WhiteSmoke")
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
 
 // x axis title/label
 // divorced rate
@@ -280,6 +290,17 @@ d3.csv(csv_data, function(error, data) {
         }
         
     } // end plot_data function
-    
+
+    //resizing and making chart responsive
+    var aspect = width / height,
+        chart = d3.select('#chart');
+    d3.select(window)
+    .on("resize", function() {
+        var targetWidth = chart.node().getBoundingClientRect().width;
+        chart.attr("width", targetWidth);
+        chart.attr("height", targetWidth / aspect);
+    });
+
+     // end resize()  
 }); // end d3.csv 
 
