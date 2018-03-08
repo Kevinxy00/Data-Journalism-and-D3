@@ -20,7 +20,7 @@ var svg = d3.select(".chart")
     .append("div")
     .classed("svg-container", true) //container class to make it responsive
     .append("svg")
-    /*old code: unresponsive svg width & height
+    /*old code: for fixed/unresponsive svg width & height
         //.attr("width", width + margin.left + margin.right)
         //.attr("height", height + margin.top + margin.bottom) */
     // *** responsive SVG needs these 2 attributes and no width and height attr
@@ -134,14 +134,14 @@ d3.csv(csv_data, function(error, data) {
     // plot first chart 
     plot_data(activeX, activeY);
 
-    // change active x and y text on click
+    // *** change active x and y text on click
     var allX = d3.selectAll("#x");
     var allY = d3.selectAll("#y");
 
     change_active_x(allX);
     change_active_y(allY);
 
-    //input params (d3.selectAll(x axis labels))
+    // Function input params (d3.selectAll(x axis labels))
     function change_active_x(textLabels){
         textLabels.on("click", function(event){
             var clicked = d3.select(this)
@@ -156,7 +156,7 @@ d3.csv(csv_data, function(error, data) {
             //return clicked.attr("data-axis-name");
         });
     }
-    // input param (d3.selectAll(y axis labels))
+    // Function input param (d3.selectAll(y axis labels))
     function change_active_y(textLabels){
         textLabels.on("click", function(event){
             var clicked = d3.select(this)
@@ -291,16 +291,5 @@ d3.csv(csv_data, function(error, data) {
         
     } // end plot_data function
 
-    //resizing and making chart responsive
-    var aspect = width / height,
-        chart = d3.select('#chart');
-    d3.select(window)
-    .on("resize", function() {
-        var targetWidth = chart.node().getBoundingClientRect().width;
-        chart.attr("width", targetWidth);
-        chart.attr("height", targetWidth / aspect);
-    });
-
-     // end resize()  
 }); // end d3.csv 
 
